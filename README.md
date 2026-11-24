@@ -53,3 +53,27 @@ The project was entirely developed in Python, using specialized libraries for st
 
 Python · Jupyter Notebook · InterpretML · OptBinning · Statsmodels · Scikit-learn
 
+## Key Results & Discussion
+
+### 1. Empirical Performance Comparison (Youden's J Threshold)
+
+| Dataset | Model | ROC-AUC | Accuracy | Recall (1) | Specificity (0) | Precision (1) |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: |
+| **German Credit** | WoE Logistic Regression | 0.779 | 0.740 | 0.733 | 0.743 | 0.550 |
+| **German Credit** | **EBM** | **0.806** | 0.733 | **0.800** | 0.705 | 0.537 |
+| **Give Me Some Credit** | WoE Logistic Regression | 0.858 | 0.770 | **0.791** | — | 0.197 |
+| **Give Me Some Credit** | **EBM** | **0.864** | **0.794** | 0.775 | — | **0.214** |
+
+* **Confusion Matrices (Youden cutoff):**
+  * **German Credit — Logistic Regression:** `[[156, 54], [24, 66]]`
+  * **German Credit — EBM:** `[[148, 62], [18, 72]]`
+  * **Give Me Some Credit — EBM:** `[[33407, 8585], [676, 2332]]`
+  * **Give Me Some Credit — Logistic Regression:** `[[32290, 9702], [630, 2378]]`
+
+### 2. Main Findings & Regulatory Implications
+
+* **Competitive Predictive Power with Minimal Preprocessing:** EBM matched or outperformed traditional WoE Logistic Regression across both datasets—despite the structured, low-dimensional nature of credit scoring data typically favoring parsimonious linear models. Built-in automatic binning, native missing-value handling, and internal parameter optimization reduced analyst discretion while maintaining strong generalization.
+* **Additive Structure Outperforms Pairwise Interactions:** Contrary to standard expectations for $\text{GA}^2\text{M}$ models, adding pairwise interaction terms slightly reduced ROC-AUC on both datasets compared to the purely additive EBM. This indicates that credit default drivers in these portfolios are predominantly additive, aligning with established industry reliance on parsimonious scorecards.
+* **Visual Scorecards & EU AI Act Compliance:** EBM's learned shape functions act as transparent visual scorecards, clearly isolating each variable's positive or negative contribution to default risk. This *glass-box* design directly satisfies the explainability, auditability, and human-oversight requirements set by the **European AI Act** for high-risk credit scoring systems, while also guiding model tuning.
+* **Probability Calibration under Cost-Sensitive Training:** Because a 2:1 cost-sensitive class weight was applied during training to handle class imbalance, raw predicted probabilities are shifted upward. Post-hoc probability calibration (evaluated in the third notebook) restores well-calibrated Probability of Default (PD) estimates suitable for risk management.
+
