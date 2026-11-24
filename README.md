@@ -101,7 +101,7 @@ EBM produces glass-box explanations that can be inspected interactively in a sin
 
 Unlike standard models that require manual imputation, EBM treats missing values (`NaN`) as an explicit category during automatic binning, learning a dedicated risk contribution directly from the data. This avoids imputation bias and captures informative missingness typical of behavioural credit data (such as incomplete credit history or tracking anomalies).
 
-| Feature | % Missing (Train) | % Missing (Test) | Log-Odds (Missing) | $\Delta\text{Prob}_{\text{missing}}$ | Default Rate (Missing %) | Sample Avg Default (%) | Lift vs. Avg (%) |
+| Feature | % Missing (Train) | % Missing (Test) | Log-Odds (Missing) | ΔProb (Missing) | Default Rate (Missing %) | Sample Avg Default (%) | Lift vs. Avg (%) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | `MonthlyIncome` | 19.74% | 20.02% | -0.0937 | -0.0234 | 5.48% | 6.68% | -1.20% |
 | `NumberOfDependents` | 2.59% | 2.67% | -0.1006 | -0.0251 | 4.15% | 6.68% | -2.53% |
