@@ -57,12 +57,14 @@ Python · Jupyter Notebook · InterpretML · OptBinning · Statsmodels · Scikit
 
 ### 1. Empirical Performance Comparison (Youden's J Threshold)
 
+### 1. Empirical Performance Comparison (Youden's J Threshold)
+
 | Dataset | Model | ROC-AUC | Accuracy | Recall (1) | Specificity (0) | Precision (1) |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: |
 | **German Credit** | WoE Logistic Regression | 0.779 | 0.740 | 0.733 | 0.743 | 0.550 |
 | **German Credit** | **EBM** | **0.806** | 0.733 | **0.800** | 0.705 | 0.537 |
-| **Give Me Some Credit** | WoE Logistic Regression | 0.858 | 0.770 | **0.791** | — | 0.197 |
-| **Give Me Some Credit** | **EBM** | **0.864** | **0.794** | 0.775 | — | **0.214** |
+| **Give Me Some Credit** | WoE Logistic Regression | 0.858 | 0.770 | **0.791** | 0.769 | 0.197 |
+| **Give Me Some Credit** | **EBM** | **0.864** | **0.794** | 0.775 | **0.796** | **0.214** |
 
 * **Confusion Matrices (Youden cutoff):**
   * **German Credit — Logistic Regression:** `[[156, 54], [24, 66]]`
@@ -70,7 +72,23 @@ Python · Jupyter Notebook · InterpretML · OptBinning · Statsmodels · Scikit
   * **Give Me Some Credit — EBM:** `[[33407, 8585], [676, 2332]]`
   * **Give Me Some Credit — Logistic Regression:** `[[32290, 9702], [630, 2378]]`
 
-### 2. Main Findings & Regulatory Implications
+### 2. Model Explainability & EBM Dashboard Highlights
+
+EBM produces glass-box explanations that can be inspected interactively in a single dashboard, turning model predictions into transparent visual scorecards aligned with risk governance and AI Act transparency requirements.
+
+* **Global Feature Importance:** Financial and balance-sheet variables—led by `Status_Checking_Account`, `Savings_Account_Bonds`, and `Duration_Months`, followed by `Credit_History`, `Purpose`, and `Installment_Rate`—drive most of the predictive power ahead of purely socio-demographic attributes.
+  ![EBM Global Feature Importances](images/ebm_global_importance.png)
+
+* **Global Shape Functions (`Status_Checking_Account` & `Savings_Account_Bonds`):** Overdraft balances (`<0 DM`) push risk upward, whereas stronger balances lower it; notably, `no account` shows a negative risk contribution, consistent with smaller loan sizes or stricter screening for applicants without an active checking account.
+  ![EBM Global Shape Functions](images/ebm_global_shape_account.png)
+
+* **Local Explanation (Individual Scorecard):** For each applicant, EBM breaks down the prediction into positive and negative feature contributions around the baseline/intercept, showing both the exact score drivers and the resulting probability estimate.
+  ![EBM Local Explanation](images/ebm_local_explanation.png)
+
+* **Pairwise Interaction (`Age` vs. `Duration_Months`):** While pairwise interactions add visual complexity and slightly lower AUC compared to the purely additive EBM in these datasets, the interaction surface illustrates how risk shifts across combinations of age and loan duration (such as higher risk for younger applicants with longer durations versus lower risk for older applicants with shorter durations).
+  ![EBM Interaction Age vs Duration](images/ebm_interaction_age_duration.png)
+
+### 3. Main Findings & Regulatory Implications
 
 * **Competitive Predictive Power with Minimal Preprocessing:** EBM matched or outperformed traditional WoE Logistic Regression across both datasets—despite the structured, low-dimensional nature of credit scoring data typically favoring parsimonious linear models. Built-in automatic binning, native missing-value handling, and internal parameter optimization reduced analyst discretion while maintaining strong generalization.
 * **Additive Structure Outperforms Pairwise Interactions:** Contrary to standard expectations for $\text{GA}^2\text{M}$ models, adding pairwise interaction terms slightly reduced ROC-AUC on both datasets compared to the purely additive EBM. This indicates that credit default drivers in these portfolios are predominantly additive, aligning with established industry reliance on parsimonious scorecards.
