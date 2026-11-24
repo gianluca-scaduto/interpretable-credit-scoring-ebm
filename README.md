@@ -2,6 +2,8 @@
 
 Evaluation of Explainable Boosting Machines (EBM), a glass-box GA²M model developed by Microsoft Research, for credit scoring, benchmarked against traditional Weight of Evidence (WoE) logistic regression on two credit risk datasets.
 
+
+
 ## Overview
 
 The growing adoption of Machine Learning in credit risk assessment has highlighted a key challenge: balancing predictive performance with model interpretability, transparency, and auditability.
@@ -16,6 +18,7 @@ The evaluation is conducted on two credit risk datasets representing different s
 - **Give Me Some Credit:** behavioural scoring, comprising over 150,000 observations, used to examine model performance under substantial class imbalance and the presence of missing values.
 
 The overall objective is to assess whether EBM can achieve a competitive balance between predictive accuracy, transparency, and robustness in estimating credit default risk, while addressing the governance and auditability requirements relevant to financial institutions.
+
 
 
 ## Methodology
@@ -35,6 +38,7 @@ The two models required different preprocessing strategies, reflecting their und
 - **Explainable Boosting Machine (EBM):** trained on the original input variables, leveraging its built-in capability to handle numerical and categorical features and automatically learn suitable feature discretization.
 - **WoE Logistic Regression:** numerical variables were discretized through Optimal Binning and subsequently transformed into Weight of Evidence (WoE) values before fitting the logistic regression model.
 
+
 ## Tools & Libraries
 
 The project was entirely developed in Python, using specialized libraries for statistical analysis, data preprocessing, and interpretable machine learning.
@@ -53,6 +57,8 @@ The project was entirely developed in Python, using specialized libraries for st
 
 Python · Jupyter Notebook · InterpretML · OptBinning · Statsmodels · Scikit-learn
 
+
+
 ## Key Results & Discussion
 
 ### 1. Empirical Performance Comparison (Youden's J Threshold)
@@ -69,6 +75,7 @@ Python · Jupyter Notebook · InterpretML · OptBinning · Statsmodels · Scikit
   * **German Credit — EBM:** `[[148, 62], [18, 72]]`
   * **Give Me Some Credit — EBM:** `[[33407, 8585], [676, 2332]]`
   * **Give Me Some Credit — Logistic Regression:** `[[32290, 9702], [630, 2378]]`
+
 
 ### 2. Model Explainability & EBM Dashboard Highlights
 
@@ -105,10 +112,11 @@ Unlike standard models that require manual imputation, EBM treats missing values
 
 * **Informative Missingness as a Risk Signal:** Applicants with missing delinquency records (`30-59`, `60-89`, and `90+` days past due) exhibit a **54.40% default rate**—nearly eight times the sample average of **6.68%**. EBM automatically assigns positive log-odds (`+0.42` to `+0.64`) to these missing bins, turning data reporting gaps into an effective risk discriminator for incoming applicants.
 
+
 ### 4. Main Findings & Regulatory Implications
 
-* **Competitive Predictive Power with Minimal Preprocessing:** EBM matched or outperformed traditional WoE Logistic Regression across both datasets—despite the structured, low-dimensional nature of credit scoring data typically favoring parsimonious linear models. Built-in automatic binning, native missing-value handling, and internal parameter optimization reduced analyst discretion while maintaining strong generalization.
-* **Additive Structure Outperforms Pairwise Interactions:** Contrary to standard expectations for $\text{GA}^2\text{M}$ models, adding pairwise interaction terms slightly reduced ROC-AUC on both datasets compared to the purely additive EBM. This indicates that credit default drivers in these portfolios are predominantly additive, aligning with established industry reliance on parsimonious scorecards.
-* **Visual Scorecards & EU AI Act Compliance:** EBM's learned shape functions act as transparent visual scorecards, clearly isolating each variable's positive or negative contribution to default risk. This *glass-box* design directly satisfies the explainability, auditability, and human-oversight requirements set by the **European AI Act** for high-risk credit scoring systems, while also guiding model tuning.
-* **Probability Calibration under Cost-Sensitive Training:** Because a 2:1 cost-sensitive class weight was applied during training to handle class imbalance, raw predicted probabilities are shifted upward. Post-hoc probability calibration (evaluated in the third notebook) restores well-calibrated Probability of Default (PD) estimates suitable for risk management.
+- **Competitive Predictive Power with Minimal Preprocessing & Guided Tuning:** EBM matched or outperformed traditional WoE Logistic Regression across both datasets—despite the structured, low-dimensional nature of credit scoring data typically favoring parsimonious linear models. Built-in binning and native missing-value handling kept preprocessing lean while reducing arbitrary manual choices, and the interactive dashboard actively guided model tuning by letting you inspect shape functions and evaluate estimate stability across bags to guard against overfitting while maintaining strong generalization.
+- **Additive Structure Outperforms Pairwise Interactions:** Contrary to standard expectations for GA²M models, adding pairwise interaction terms slightly reduced ROC-AUC on both datasets compared to the purely additive EBM. This indicates that credit default drivers in these portfolios are predominantly additive, aligning with established industry reliance on parsimonious scorecards.
+- **Visual Scorecards & EU AI Act Compliance:** EBM's learned shape functions act as transparent visual scorecards, clearly isolating each variable's positive or negative contribution to default risk. Crucially, unlike post-hoc explainability methods applied to black-box models, these plots represent the *exact* internal contributions learned by the glass-box model rather than an approximation of them—supporting auditability, human oversight, and compliance with the **European AI Act** for high-risk credit scoring systems.
+- **Probability Calibration under Cost-Sensitive Training:** Because a 2:1 cost-sensitive class weight was applied during training to handle class imbalance, raw predicted probabilities are shifted upward. Post-hoc probability calibration (evaluated in the third notebook) restores well-calibrated Probability of Default (PD) estimates suitable for risk management.
 
