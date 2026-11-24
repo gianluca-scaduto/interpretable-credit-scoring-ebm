@@ -1,2 +1,55 @@
-# interpretable-credit-scoring-ebm
-Evaluation of Explainable Boosting Machines (EBM), a glass-box GAM² model developed by Microsoft Research, for credit scoring, benchmarked against traditional Weight of Evidence (WoE) logistic regression on two credit risk datasets.
+# Interpretable Credit Scoring with Explainable Boosting Machines
+
+Evaluation of Explainable Boosting Machines (EBM), a glass-box GA²M model developed by Microsoft Research, for credit scoring, benchmarked against traditional Weight of Evidence (WoE) logistic regression on two credit risk datasets.
+
+## Overview
+
+The growing adoption of Machine Learning in credit risk assessment has highlighted a key challenge: balancing predictive performance with model interpretability, transparency, and auditability.
+
+This project investigates whether Explainable Boosting Machines (EBM), an interpretable machine learning model based on Generalized Additive Models with pairwise interactions (GA²M), can represent a viable alternative to traditional credit scoring approaches.
+
+The empirical analysis compares EBM with Weight of Evidence (WoE) Logistic Regression, a benchmark methodology developed in line with established banking practices, to assess their predictive performance, interpretability, and ability to capture economically meaningful relationships.
+
+The evaluation is conducted on two credit risk datasets representing different scoring contexts:
+
+- **German Credit Dataset:** application scoring, comprising 1,000 credit applicants, used to investigate predictive performance, model generalization, and the economic and financial plausibility of learned relationships.
+- **Give Me Some Credit:** behavioural scoring, comprising over 150,000 observations, used to examine model performance under substantial class imbalance and the presence of missing values.
+
+The overall objective is to assess whether EBM can achieve a competitive balance between predictive accuracy, transparency, and robustness in estimating credit default risk, while addressing the governance and auditability requirements relevant to financial institutions.
+
+
+## Methodology
+
+The empirical analysis follows a consistent experimental framework, applying the same data splitting strategy and class weighting approach to both models.
+
+### Experimental Setup
+
+- **Train-Test Split:** 70% training set and 30% test set, using stratified sampling to preserve the original target class distribution.
+- **Class Imbalance:** No resampling techniques were applied. Instead, a cost-sensitive approach was adopted by assigning twice the weight to default observations compared to non-default observations.
+- **Evaluation:** Model performance was assessed on the hold-out test set using ROC-AUC, Precision, Recall, Specificity, and Confusion Matrix. Classification metrics were evaluated using the Youden's J statistic to determine the classification threshold.
+
+### Model Implementation
+
+The two models required different preprocessing strategies, reflecting their underlying methodological differences:
+
+- **Explainable Boosting Machine (EBM):** trained on the original input variables, leveraging its built-in capability to handle numerical and categorical features and automatically learn suitable feature discretization.
+- **WoE Logistic Regression:** numerical variables were discretized through Optimal Binning and subsequently transformed into Weight of Evidence (WoE) values before fitting the logistic regression model.
+
+## Tools & Libraries
+
+The project was entirely developed in Python, using specialized libraries for statistical analysis, data preprocessing, and interpretable machine learning.
+
+| Library | Purpose |
+|---|---|
+| **Pandas & NumPy** | Data manipulation and numerical computing |
+| **ydata-profiling** | Exploratory Data Analysis (EDA) and data quality assessment |
+| **InterpretML** | Implementation and interpretation of Explainable Boosting Machines |
+| **OptBinning** | Optimal Binning and Weight of Evidence (WoE) transformations |
+| **Statsmodels** | Logistic Regression estimation using Generalized Linear Models (GLM) |
+| **Scikit-learn** | Model evaluation and classification metrics |
+| **Matplotlib** | Data visualization and graphical analysis |
+
+### Main Technologies
+
+Python · Jupyter Notebook · InterpretML · OptBinning · Statsmodels · Scikit-learn
+
