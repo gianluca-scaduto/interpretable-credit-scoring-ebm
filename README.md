@@ -57,8 +57,6 @@ Python · Jupyter Notebook · InterpretML · OptBinning · Statsmodels · Scikit
 
 ### 1. Empirical Performance Comparison (Youden's J Threshold)
 
-### 1. Empirical Performance Comparison (Youden's J Threshold)
-
 | Dataset | Model | ROC-AUC | Accuracy | Recall (1) | Specificity (0) | Precision (1) |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: |
 | **German Credit** | WoE Logistic Regression | 0.779 | 0.740 | 0.733 | 0.743 | 0.550 |
@@ -79,16 +77,35 @@ EBM produces glass-box explanations that can be inspected interactively in a sin
 * **Global Feature Importance:** Financial and balance-sheet variables—led by `Status_Checking_Account`, `Savings_Account_Bonds`, and `Duration_Months`, followed by `Credit_History`, `Purpose`, and `Installment_Rate`—drive most of the predictive power ahead of purely socio-demographic attributes.
   ![EBM Global Feature Importances](images/ebm_global_importance.png)
 
+
 * **Global Shape Functions (`Status_Checking_Account` & `Savings_Account_Bonds`):** Overdraft balances (`<0 DM`) push risk upward, whereas stronger balances lower it; notably, `no account` shows a negative risk contribution, consistent with smaller loan sizes or stricter screening for applicants without an active checking account.
   ![EBM Global Shape Functions](images/ebm_global_shape_account.png)
+
 
 * **Local Explanation (Individual Scorecard):** For each applicant, EBM breaks down the prediction into positive and negative feature contributions around the baseline/intercept, showing both the exact score drivers and the resulting probability estimate.
   ![EBM Local Explanation](images/ebm_local_explanation.png)
 
+
 * **Pairwise Interaction (`Age` vs. `Duration_Months`):** While pairwise interactions add visual complexity and slightly lower AUC compared to the purely additive EBM in these datasets, the interaction surface illustrates how risk shifts across combinations of age and loan duration (such as higher risk for younger applicants with longer durations versus lower risk for older applicants with shorter durations).
   ![EBM Interaction Age vs Duration](images/ebm_interaction_age_duration.png)
 
-### 3. Main Findings & Regulatory Implications
+
+### 3. Native Handling of Missing Values (*Give Me Some Credit*)
+
+Unlike standard models that require manual imputation, EBM treats missing values (`NaN`) as an explicit category during automatic binning, learning a dedicated risk contribution directly from the data. This avoids imputation bias and captures informative missingness typical of behavioural credit data (such as incomplete credit history or tracking anomalies).
+
+| Feature | % Missing (Train) | % Missing (Test) | Log-Odds (Missing) | $\Delta\text{Prob}_{\text{missing}}$ | Default Rate (Missing %) | Sample Avg Default (%) | Lift vs. Avg (%) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| `MonthlyIncome` | 19.74% | 20.02% | -0.0937 | -0.0234 | 5.48% | 6.68% | -1.20% |
+| `NumberOfDependents` | 2.59% | 2.67% | -0.1006 | -0.0251 | 4.15% | 6.68% | -2.53% |
+| `NumberOfTime30-59DaysPastDueNotWorse` | 0.17% | 0.19% | +0.5319 | +0.1299 | **54.40%** | 6.68% | **+47.72%** |
+| `NumberOfTimes90DaysLate` | 0.17% | 0.19% | +0.6388 | +0.1545 | **54.40%** | 6.68% | **+47.72%** |
+| `NumberOfTime60-89DaysPastDueNotWorse` | 0.17% | 0.19% | +0.4213 | +0.1038 | **54.40%** | 6.68% | **+47.72%** |
+| `age` | 0.04% | 0.04% | +0.8431 | +0.1991 | 4.44% | 6.68% | -2.24% |
+
+* **Informative Missingness as a Risk Signal:** Applicants with missing delinquency records (`30-59`, `60-89`, and `90+` days past due) exhibit a **54.40% default rate**—nearly eight times the sample average of **6.68%**. EBM automatically assigns positive log-odds (`+0.42` to `+0.64`) to these missing bins, turning data reporting gaps into an effective risk discriminator for incoming applicants.
+
+### 4. Main Findings & Regulatory Implications
 
 * **Competitive Predictive Power with Minimal Preprocessing:** EBM matched or outperformed traditional WoE Logistic Regression across both datasets—despite the structured, low-dimensional nature of credit scoring data typically favoring parsimonious linear models. Built-in automatic binning, native missing-value handling, and internal parameter optimization reduced analyst discretion while maintaining strong generalization.
 * **Additive Structure Outperforms Pairwise Interactions:** Contrary to standard expectations for $\text{GA}^2\text{M}$ models, adding pairwise interaction terms slightly reduced ROC-AUC on both datasets compared to the purely additive EBM. This indicates that credit default drivers in these portfolios are predominantly additive, aligning with established industry reliance on parsimonious scorecards.
